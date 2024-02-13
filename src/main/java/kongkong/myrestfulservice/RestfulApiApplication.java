@@ -9,14 +9,6 @@ public class RestfulApiApplication {
 
     public static void main(String[] args) {
         ApplicationContext applicationContext = SpringApplication.run(RestfulApiApplication.class, args);
-
-        String[] allBeans = applicationContext.getBeanDefinitionNames();
-
-        for(String beans : allBeans){
-            System.out.println("beans = " + beans);
-        }
-
-
     }
 
 }
