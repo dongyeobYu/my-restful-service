@@ -39,6 +39,9 @@ public class UserDaoService {
         return user;
     }
 
+    /**
+     * 관계형 DB 사용 X
+     * */
     public User finaOne(Long id){
         for(User user : userList){
             if(Objects.equals(user.getId(), id)){
