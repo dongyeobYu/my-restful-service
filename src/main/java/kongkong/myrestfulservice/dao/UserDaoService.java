@@ -42,7 +42,7 @@ public class UserDaoService {
     /**
      * 관계형 DB 사용 X
      * */
-    public User finaOne(Long id){
+    public User findOne(Long id){
         for(User user : userList){
             if(Objects.equals(user.getId(), id)){
                 return user;
