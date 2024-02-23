@@ -3,8 +3,12 @@ package kongkong.myrestfulservice.controller;
 import kongkong.myrestfulservice.dao.UserDaoService;
 import kongkong.myrestfulservice.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -24,7 +28,14 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public void createUser(@RequestBody User user){
-        service.save(user);
+    public ResponseEntity<User> createUser(@RequestBody User user){
+        User savedUser = service.save(user);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}") // PostMapping 으로 요청하는 id값
+                .buildAndExpand(savedUser.getId()) // id값에 들어갈 값 -> 32번 라인에서 저장한 id
+                .toUri(); // URI 로 변경
+
+        return ResponseEntity.created(location).build();
     }
 }
