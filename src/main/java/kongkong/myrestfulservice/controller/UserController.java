@@ -2,6 +2,7 @@ package kongkong.myrestfulservice.controller;
 
 import kongkong.myrestfulservice.dao.UserDaoService;
 import kongkong.myrestfulservice.domain.User;
+import kongkong.myrestfulservice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,13 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public User retrieveUserById(@PathVariable Long id){
-        return service.findOne(id);
+        User user = service.findOne(id);
+
+        if(user == null){
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
+
+        return user;
     }
 
     @PostMapping("/users")
