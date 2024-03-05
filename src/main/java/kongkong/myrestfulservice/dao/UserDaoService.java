@@ -3,10 +3,7 @@ package kongkong.myrestfulservice.dao;
 import kongkong.myrestfulservice.domain.User;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class UserDaoService {
@@ -49,6 +46,21 @@ public class UserDaoService {
             }
         }
             return null;
+    }
+
+    public User deleteById(Long id){
+        Iterator<User> iterator = userList.iterator();
+
+        while(iterator.hasNext()){
+            User user = iterator.next();
+
+            if(Objects.equals(user.getId(), id)){
+                iterator.remove();
+                return user;
+            }
+        }
+
+        return null;
     }
 
 }
