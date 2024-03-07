@@ -1,5 +1,6 @@
 package kongkong.myrestfulservice.controller;
 
+import jakarta.validation.Valid;
 import kongkong.myrestfulservice.dao.UserDaoService;
 import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.exception.AllException;
@@ -47,8 +48,11 @@ public class UserController {
         return user;
     }
 
+    /**
+     *  매개변수로 받는 User 객체에 @Valid 를 선언해줘서 Validation 체크를 한다고 명시함. Validation 체크는 User 클래스에서 지정해줌 ex) @Size, @Past
+     * */
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user){
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
         User savedUser = service.save(user);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
