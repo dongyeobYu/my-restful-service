@@ -1,13 +1,19 @@
 package kongkong.myrestfulservice.controller;
 
 import kongkong.myrestfulservice.bean.HelloWorldBean;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.MessageSource;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 @RestController
 public class HelloWorldContoller {
+
+    private final MessageSource messageSource;
+
+    public HelloWorldContoller(MessageSource messageSource){
+        this.messageSource=messageSource;
+    }
 
     // GET
     // URL - /hello-world
@@ -21,6 +27,7 @@ public class HelloWorldContoller {
     @GetMapping(path = "/hello-world-bean")
     public HelloWorldBean helloworldBean(){
         return new HelloWorldBean("Hello World");
+
     }
 
     @GetMapping(path = "/hello-world-bean/path-variable/{name}")
@@ -28,4 +35,8 @@ public class HelloWorldContoller {
         return new HelloWorldBean(String.format("Hello World, %s", name));
     }
 
+    @GetMapping(path = "/hello-world-internationalize")
+    public String helloworldInternationalized(@RequestHeader(name = "Accept-Language", required = false) Locale locale){
+        return messageSource.getMessage("greeting.message", null, locale);
+    }
 }
