@@ -19,8 +19,16 @@ public class UserDaoService {
                 .joinDate(new Date())
                 .build()
         );
-        userList.add(new User(2L, "Jeon", new Date()));
-        userList.add(new User(3L, "Kim", new Date()));
+        User user2 = User.builder()
+                .id(2L)
+                .name("Jeon")
+                .joinDate(new Date())
+                .build();
+
+
+        userList.add(user2);
+        userList.add(new User(3L, "Park", new Date()));
+        userList.add(new User(4L, "Kim", new Date()));
     }
 
     public List<User> findAll() {
