@@ -13,7 +13,12 @@ public class UserDaoService {
     private static Long userCount = 3L;
 
     static {
-        userList.add(new User(1L, "Yu", new Date()));
+        userList.add(User.builder()
+                .id(1L)
+                .name("Yu")
+                .joinDate(new Date())
+                .build()
+        );
         userList.add(new User(2L, "Jeon", new Date()));
         userList.add(new User(3L, "Kim", new Date()));
     }
