@@ -2,14 +2,13 @@ package kongkong.myrestfulservice.domain;
 
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
 
-@Data
+@Getter
+@Setter
 public class User {
 
     private Long id;
