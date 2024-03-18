@@ -17,18 +17,35 @@ public class UserDaoService {
                 .id(1L)
                 .name("Yu")
                 .joinDate(new Date())
+                .password("TEST1")
+                .ssn("SSN1")
                 .build()
         );
         User user2 = User.builder()
                 .id(2L)
                 .name("Jeon")
                 .joinDate(new Date())
+                .password("TEST2")
+                .ssn("SSN2")
+                .build();
+        User user3 = User.builder()
+                .id(3L)
+                .name("Park")
+                .joinDate(new Date())
+                .password("TEST3")
+                .ssn("SSN3")
+                .build();
+        User user4 = User.builder()
+                .id(4L)
+                .name("Kim")
+                .joinDate(new Date())
+                .password("TEST4")
+                .ssn("SSN4")
                 .build();
 
-
         userList.add(user2);
-        userList.add(new User(3L, "Park", new Date()));
-        userList.add(new User(4L, "Kim", new Date()));
+        userList.add(user3);
+        userList.add(user4);
     }
 
     public List<User> findAll() {
@@ -51,23 +68,23 @@ public class UserDaoService {
 
     /**
      * 관계형 DB 사용 X
-     * */
-    public User findOne(Long id){
-        for(User user : userList){
-            if(Objects.equals(user.getId(), id)){
+     */
+    public User findOne(Long id) {
+        for (User user : userList) {
+            if (Objects.equals(user.getId(), id)) {
                 return user;
             }
         }
-            return null;
+        return null;
     }
 
-    public User deleteById(Long id){
+    public User deleteById(Long id) {
         Iterator<User> iterator = userList.iterator();
 
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             User user = iterator.next();
 
-            if(Objects.equals(user.getId(), id)){
+            if (Objects.equals(user.getId(), id)) {
                 iterator.remove();
                 return user;
             }
