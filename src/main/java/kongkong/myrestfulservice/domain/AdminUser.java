@@ -1,18 +1,19 @@
 package kongkong.myrestfulservice.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 
 @Getter
 @Builder
-@JsonIgnoreProperties({"password", "ssn"})  // 외부에 노출하기 싫은 데이터 제외
-public class User {
+@JsonFilter("userInfo")
+public class AdminUser {
 
     private Long id;
 
@@ -27,4 +28,17 @@ public class User {
 
     //@JsonIgnore
     private String ssn;
+
+
+    // 복사 팩토리 메서드
+    public static AdminUser copyUser(User user){
+        return AdminUser.builder()
+                .id(user.getId())
+                .password(user.getPassword())
+                .joinDate(user.getJoinDate())
+                .ssn(user.getSsn())
+                .name(user.getName())
+                .build();
+    }
+
 }

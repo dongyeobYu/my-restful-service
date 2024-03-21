@@ -19,7 +19,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Exception 예외에 관한 핸들링
      * */
-    @ExceptionHandler({Exception.class})
+    //@ExceptionHandler({Exception.class})
     public final ResponseEntity<Object> handleAllException(Exception ex, WebRequest request){
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(

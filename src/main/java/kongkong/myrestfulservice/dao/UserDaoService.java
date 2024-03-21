@@ -10,7 +10,6 @@ public class UserDaoService {
 
     private static List<User> userList = new ArrayList<>();
 
-    private static Long userCount = 3L;
 
     static {
         userList.add(User.builder()
@@ -18,7 +17,7 @@ public class UserDaoService {
                 .name("Yu")
                 .joinDate(new Date())
                 .password("TEST1")
-                .ssn("SSN1")
+                .ssn("111111-1111111")
                 .build()
         );
         User user2 = User.builder()
@@ -26,21 +25,21 @@ public class UserDaoService {
                 .name("Jeon")
                 .joinDate(new Date())
                 .password("TEST2")
-                .ssn("SSN2")
+                .ssn("222222-2222222")
                 .build();
         User user3 = User.builder()
                 .id(3L)
                 .name("Park")
                 .joinDate(new Date())
                 .password("TEST3")
-                .ssn("SSN3")
+                .ssn("333333-3333333")
                 .build();
         User user4 = User.builder()
                 .id(4L)
                 .name("Kim")
                 .joinDate(new Date())
                 .password("TEST4")
-                .ssn("SSN4")
+                .ssn("444444-4444444")
                 .build();
 
         userList.add(user2);
@@ -53,13 +52,6 @@ public class UserDaoService {
     }
 
     public User save(User user) {
-        if (user.getId() == null) {
-            user.setId(++userCount);
-        }
-
-        if (user.getJoinDate() == null) {
-            user.setJoinDate(new Date());
-        }
 
         userList.add(user);
 
