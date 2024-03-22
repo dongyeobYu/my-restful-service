@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition;
 import kongkong.myrestfulservice.dao.UserDaoService;
 import kongkong.myrestfulservice.domain.AdminUser;
+import kongkong.myrestfulservice.domain.AdminUserV2;
 import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,9 @@ public class AdminUserController {
 
     private final UserDaoService service;
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdmin(@PathVariable Long id){
+    // ---> /admin/v1/users/{id}
+    @GetMapping("/v1/users/{id}")
+    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV1(@PathVariable Long id){
         User user = service.findOne(id);
 
         if(user == null){
@@ -49,6 +51,33 @@ public class AdminUserController {
 
         // adminUser에 filterProvider 를 걸어서 필터 설정
         MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(adminUser);
+        mappingJacksonValue.setFilters(filterProvider);
+
+        return ResponseEntity.ok(mappingJacksonValue);
+    }
+
+    @GetMapping("/v2/users/{id}")
+    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV2(@PathVariable Long id){
+        User user = service.findOne(id);
+
+        if(user == null){
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
+
+        // adminUser 에 User 객체 복사 (불변성 o)
+        AdminUserV2 adminUserV2 = AdminUserV2.copyUser(user, "VIP");
+
+        /**
+         * JsonFilter 사용
+         * */
+        // Filter 설정
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
+
+        // @JsonFilter 에 설정해둔 ID값을 쓰고 해당 도메인에 걸 필터를 지정해줌
+        FilterProvider filterProvider = new SimpleFilterProvider().addFilter("userInfoV2", filter);
+
+        // adminUser에 filterProvider 를 걸어서 필터 설정
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(adminUserV2);
         mappingJacksonValue.setFilters(filterProvider);
 
         return ResponseEntity.ok(mappingJacksonValue);
