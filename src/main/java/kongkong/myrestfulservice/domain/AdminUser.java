@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Getter
@@ -31,7 +34,7 @@ public class AdminUser {
 
 
     // 복사 팩토리 메서드
-    public static AdminUser copyUser(User user){
+    public static AdminUser copyUser(User user) {
         return AdminUser.builder()
                 .id(user.getId())
                 .password(user.getPassword())
@@ -41,4 +44,19 @@ public class AdminUser {
                 .build();
     }
 
+    // 복사 팩토리 메서드 -> Stream().map() 사용
+    // userList 를 가져와서 각각 AdminUser로 객체 변환 후 리스트로 반환
+    // Collectors -> 원하는 자료형으로 변환
+    // Collectors.toList() -> 리스트로 변환
+    public static List<AdminUser> copyUserList(List<User> userList) {
+        return userList.stream().map(
+                        user -> AdminUser.builder()
+                                .id(user.getId())
+                                .password(user.getPassword())
+                                .joinDate(user.getJoinDate())
+                                .ssn(user.getSsn())
+                                .name(user.getName())
+                                .build())
+                .collect(Collectors.toList());
+    }
 }

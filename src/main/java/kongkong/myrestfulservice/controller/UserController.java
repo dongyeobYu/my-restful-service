@@ -1,12 +1,17 @@
 package kongkong.myrestfulservice.controller;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import jakarta.validation.Valid;
 import kongkong.myrestfulservice.dao.UserDaoService;
+import kongkong.myrestfulservice.domain.AdminUser;
 import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.exception.AllException;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -74,4 +79,5 @@ public class UserController {
 
         return ResponseEntity.noContent().build();
     }
+
 }
