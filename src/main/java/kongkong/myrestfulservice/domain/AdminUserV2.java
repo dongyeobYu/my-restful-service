@@ -47,5 +47,6 @@ public class AdminUserV2 extends AdminUser {
                                 .grade(grade)
                                 .build())
                 .collect(Collectors.toList());
+        // .toList();  -> 불변 List를 반환, .collect(Collectors.toList()) 는 ArrayList 반환, 불변X
     }
 }

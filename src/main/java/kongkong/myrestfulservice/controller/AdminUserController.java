@@ -29,7 +29,10 @@ public class AdminUserController {
     private final UserDaoService service;
 
     // ---> /admin/v1/users/{id}
-    @GetMapping("/v1/users/{id}")
+    //@GetMapping(value = "/users/{id}", params="version=1")      // param 으로 관리, Amazon 에서 사용
+    //@GetMapping(value = "/users/{id}", headers="X-API-VERSION=1")      // header 으로 관리, MS 에서 사용
+    //@GetMapping(value = "/users/{id}", produces="application/vnd.company.appv1+json")      // mime-type 으로 관리, GitHub 에서 사용
+    @GetMapping("/v1/users/{id}")             // version 으로 관리
     public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV1(@PathVariable Long id){
         User user = service.findOne(id);
 
@@ -56,7 +59,10 @@ public class AdminUserController {
         return ResponseEntity.ok(mappingJacksonValue);
     }
 
-    @GetMapping("/v2/users/{id}")
+    //@GetMapping(value = "/users/{id}", params="version=2")      // param 으로 관리
+    //@GetMapping(value = "/users/{id}", headers="X-API-VERSION=2")      // header 으로 관리
+    //@GetMapping(value = "/users/{id}", produces="application/vnd.company.appv2+json")      // mime-type 으로 관리
+    @GetMapping("/v2/users/{id}")             // version 으로 관리
     public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV2(@PathVariable Long id){
         User user = service.findOne(id);
 
