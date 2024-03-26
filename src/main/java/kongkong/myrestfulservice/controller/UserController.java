@@ -3,6 +3,13 @@ package kongkong.myrestfulservice.controller;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kongkong.myrestfulservice.dao.UserDaoService;
 import kongkong.myrestfulservice.domain.AdminUser;
@@ -26,10 +33,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "user-controller", description = "일반 사용자 서비스를 위한 컨트롤러")
 public class UserController {
 
     private final UserDaoService service;
 
+    @Operation(summary = "모든 사용자 정보 조회 API", description = "모든 사용자의 상세 정보를 조회합니다.")
+    @ApiResponses({
+           @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema)))
+    })
     @GetMapping("/users")
     public List<User> retrieveAllUsers(){
         return service.findAll();
