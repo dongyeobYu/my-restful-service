@@ -10,6 +10,8 @@ import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.exception.AllException;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,14 +36,20 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User retrieveUserById(@PathVariable Long id){
+    public ResponseEntity<EntityModel<User>> retrieveUserById(@PathVariable Long id){
         User user = service.findOne(id);
 
         if(user == null){
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
-        return user;
+        EntityModel<User> entityModel = EntityModel.of(user);
+
+        WebMvcLinkBuilder webMvcLinkBuilder = WebMvcLinkBuilder.linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        // all-users -> http://127.0.0.1:8080/users
+        entityModel.add(webMvcLinkBuilder.withRel("all-users"));
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/users/{id}/1")

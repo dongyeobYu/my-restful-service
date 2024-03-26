@@ -3,6 +3,8 @@ package kongkong.myrestfulservice.dao;
 import kongkong.myrestfulservice.domain.User;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -15,7 +17,7 @@ public class UserDaoService {
         userList.add(User.builder()
                 .id(1L)
                 .name("Yu")
-                .joinDate(new Date())
+                .joinDate(LocalDateTime.now())
                 .password("TEST1")
                 .ssn("111111-1111111")
                 .build()
@@ -23,21 +25,21 @@ public class UserDaoService {
         User user2 = User.builder()
                 .id(2L)
                 .name("Jeon")
-                .joinDate(new Date())
+                .joinDate(LocalDateTime.now())
                 .password("TEST2")
                 .ssn("222222-2222222")
                 .build();
         User user3 = User.builder()
                 .id(3L)
                 .name("Park")
-                .joinDate(new Date())
+                .joinDate(LocalDateTime.now())
                 .password("TEST3")
                 .ssn("333333-3333333")
                 .build();
         User user4 = User.builder()
                 .id(4L)
                 .name("Kim")
-                .joinDate(new Date())
+                .joinDate(LocalDateTime.now())
                 .password("TEST4")
                 .ssn("444444-4444444")
                 .build();

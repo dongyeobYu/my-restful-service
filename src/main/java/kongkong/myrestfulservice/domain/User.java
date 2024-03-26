@@ -1,11 +1,14 @@
 package kongkong.myrestfulservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -20,7 +23,8 @@ public class User {
     private String name;
 
     @Past(message = "등록일은 과거 날짜만 입력하실 수 있습니다.")
-    private Date joinDate;
+    @JsonFormat(pattern = "yyyy-mm-dd HH:MM:SS")
+    private LocalDateTime joinDate;
 
     //@JsonIgnore     // JSON 결과값이 포함하지 않음.
     private String password;
