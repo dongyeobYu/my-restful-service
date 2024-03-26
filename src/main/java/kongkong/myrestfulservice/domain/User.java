@@ -3,6 +3,7 @@ package kongkong.myrestfulservice.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -15,20 +16,25 @@ import java.util.Date;
 @Getter
 @Builder
 @JsonIgnoreProperties({"password", "ssn"})  // 외부에 노출하기 싫은 데이터 제외
+@Schema(description = "사용자 상세 정보를 위한 도메인 객체")   // Swaggger 설정
 public class User {
 
+    @Schema(title = "사용자 ID", description = "사용자 아이디입니다.")
     private Long id;
 
+    @Schema(title = "사용자 이름", description = "사용자 이름입니다.")
     @Size(min = 2, message = "Name 은 2글자 이상 입력해 주세요")
     private String name;
 
+    @Schema(title = "등록일", description = "사용자의 등록일입니다.")
     @Past(message = "등록일은 과거 날짜만 입력하실 수 있습니다.")
     @JsonFormat(pattern = "yyyy-mm-dd HH:MM:SS")
     private LocalDateTime joinDate;
 
-    //@JsonIgnore     // JSON 결과값이 포함하지 않음.
+    @Schema(title = "비밀번호", description = "사용자 비밀번호입니다.")
     private String password;
 
+    @Schema(title = "주민번호", description = "사용자 주민등록번호입니다.")
     //@JsonIgnore
     private String ssn;
 }
