@@ -1,6 +1,7 @@
 package kongkong.myrestfulservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<EntityModel<User>> retrieveUserById(@PathVariable Long id){
+    public ResponseEntity<EntityModel<User>> retrieveUserById(@Parameter(description = "사용자 ID", required = true, example = "1") @PathVariable Long id){
         User user = service.findOne(id);
 
         if(user == null){
