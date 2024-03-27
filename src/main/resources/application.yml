@@ -4,6 +4,14 @@ logging:
   level:
     org.springframework:
 
+## 다국어 메시지 설정 Resource Bundle
 spring:
   messages:
     basename: messages
+
+## Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
