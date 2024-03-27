@@ -17,10 +17,12 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi customTestOpenAPI(){
-        String[] paths = {"/users/**", "/admin/users/**"};
+        
+        // 보여주고 싶은 경로
+        String[] paths = {"/users/**", "/admin/**"};
 
         return GroupedOpenApi.builder()
-                .group("일반 사용자 및 관리자를 위한 페이지 입니다.")
+                .group("일반 사용자 및 관리자를 위한 페이지 입니다.") // 그룹 정보
                 .pathsToMatch(paths)
                 .build();
     }
