@@ -34,18 +34,18 @@ public class UserController {
 
     @Operation(summary = "모든 사용자 정보 조회 API", description = "모든 사용자의 상세 정보를 조회합니다.")
     @ApiResponses({
-           @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema)))
     })
     @GetMapping("/users")
-    public List<User> retrieveAllUsers(){
+    public List<User> retrieveAllUsers() {
         return service.findAll();
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<EntityModel<User>> retrieveUserById(@Parameter(description = "사용자 ID", required = true, example = "1") @PathVariable Long id){
+    public ResponseEntity<EntityModel<User>> retrieveUserById(@Parameter(description = "사용자 ID", required = true, example = "1") @PathVariable Long id) {
         User user = service.findOne(id);
 
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
@@ -59,10 +59,10 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/1")
-    public User retrieveUserById1(@PathVariable Long id){
+    public User retrieveUserById1(@PathVariable Long id) {
         User user = service.findOne(id);
 
-        if(user == null){
+        if (user == null) {
             throw new AllException("Error");
         }
 
@@ -70,10 +70,10 @@ public class UserController {
     }
 
     /**
-     *  매개변수로 받는 User 객체에 @Valid 를 선언해줘서 Validation 체크를 한다고 명시함. Validation 체크는 User 클래스에서 지정해줌 ex) @Size, @Past
-     * */
+     * 매개변수로 받는 User 객체에 @Valid 를 선언해줘서 Validation 체크를 한다고 명시함. Validation 체크는 User 클래스에서 지정해줌 ex) @Size, @Past
+     */
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User savedUser = service.save(user);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -86,10 +86,10 @@ public class UserController {
 
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable Long id){
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
         User deleteUser = service.deleteById(id);
 
-        if(deleteUser == null){
+        if (deleteUser == null) {
             throw new UserNotFoundException("User missed");
         }
 

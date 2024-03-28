@@ -11,8 +11,8 @@ public class HelloWorldContoller {
 
     private final MessageSource messageSource;
 
-    public HelloWorldContoller(MessageSource messageSource){
-        this.messageSource=messageSource;
+    public HelloWorldContoller(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     // GET
@@ -25,18 +25,18 @@ public class HelloWorldContoller {
     }
 
     @GetMapping(path = "/hello-world-bean")
-    public HelloWorldBean helloworldBean(){
+    public HelloWorldBean helloworldBean() {
         return new HelloWorldBean("Hello World");
 
     }
 
     @GetMapping(path = "/hello-world-bean/path-variable/{name}")
-    public HelloWorldBean helloworldBean(@PathVariable String name){
+    public HelloWorldBean helloworldBean(@PathVariable String name) {
         return new HelloWorldBean(String.format("Hello World, %s", name));
     }
 
     @GetMapping(path = "/hello-world-internationalize")
-    public String helloworldInternationalized(@RequestHeader(name = "Accept-Language", required = false) Locale locale){
+    public String helloworldInternationalized(@RequestHeader(name = "Accept-Language", required = false) Locale locale) {
         return messageSource.getMessage("greeting.message", null, locale);
     }
 }

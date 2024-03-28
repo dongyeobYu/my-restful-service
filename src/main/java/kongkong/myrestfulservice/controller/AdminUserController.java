@@ -3,23 +3,20 @@ package kongkong.myrestfulservice.controller;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.fasterxml.jackson.databind.util.BeanUtil;
-import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition;
 import kongkong.myrestfulservice.dao.UserDaoService;
 import kongkong.myrestfulservice.domain.AdminUser;
 import kongkong.myrestfulservice.domain.AdminUserV2;
 import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,10 +30,10 @@ public class AdminUserController {
     //@GetMapping(value = "/users/{id}", headers="X-API-VERSION=1")      // header 으로 관리, MS 에서 사용
     //@GetMapping(value = "/users/{id}", produces="application/vnd.company.appv1+json")      // mime-type 으로 관리, GitHub 에서 사용
     @GetMapping("/v1/users/{id}")             // version 으로 관리
-    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV1(@PathVariable Long id){
+    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV1(@PathVariable Long id) {
         User user = service.findOne(id);
 
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
@@ -63,10 +60,10 @@ public class AdminUserController {
     //@GetMapping(value = "/users/{id}", headers="X-API-VERSION=2")      // header 으로 관리
     //@GetMapping(value = "/users/{id}", produces="application/vnd.company.appv2+json")      // mime-type 으로 관리
     @GetMapping("/v2/users/{id}")             // version 으로 관리
-    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV2(@PathVariable Long id){
+    public ResponseEntity<MappingJacksonValue> retrieveUserByIdForAdminV2(@PathVariable Long id) {
         User user = service.findOne(id);
 
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
@@ -92,7 +89,7 @@ public class AdminUserController {
 
     // -->> /admin/users
     @GetMapping("/users")
-    public ResponseEntity<MappingJacksonValue> retrieveAllUsersAdmin(){
+    public ResponseEntity<MappingJacksonValue> retrieveAllUsersAdmin() {
         List<User> user = service.findAll();
 
         // adminUser 에 User 객체 복사 (불변성 o)
