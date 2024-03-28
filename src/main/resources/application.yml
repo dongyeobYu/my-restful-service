@@ -1,13 +1,24 @@
-server.port: 8080
+server.port: 8082
 
 logging:
   level:
     org.springframework:
 
-## 다국어 메시지 설정 Resource Bundle
 spring:
+  ## 다국어 메시지 설정 Resource Bundle
   messages:
     basename: messages
+  ## JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+    
 
 ## Actuator 설정
 management:
@@ -15,3 +26,4 @@ management:
     web:
       exposure:
         include: "*"
+
