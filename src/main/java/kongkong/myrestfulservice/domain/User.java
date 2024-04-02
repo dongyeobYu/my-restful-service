@@ -3,21 +3,31 @@ package kongkong.myrestfulservice.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 
 @Getter
-@Builder
 @JsonIgnoreProperties({"password", "ssn"})  // 외부에 노출하기 싫은 데이터 제외
 @Schema(description = "사용자 상세 정보를 위한 도메인 객체")   // Swaggger 설정
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "Users")
 public class User {
 
     @Schema(title = "사용자 ID", description = "사용자 아이디입니다.")
+    @Id
+    @GeneratedValue
     private Long id;
 
     @Schema(title = "사용자 이름", description = "사용자 이름입니다.")
@@ -35,4 +45,13 @@ public class User {
     @Schema(title = "주민번호", description = "사용자 주민등록번호입니다.")
     //@JsonIgnore
     private String ssn;
+
+    @Builder
+    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn) {
+        this.id = id;
+        this.name = name;
+        this.joinDate = joinDate;
+        this.password = password;
+        this.ssn = ssn;
+    }
 }

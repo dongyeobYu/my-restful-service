@@ -1,10 +1,15 @@
-server.port: 8082
+server.port: 8083
 
 logging:
   level:
     org.springframework:
 
 spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:~/testDB/testdc
+    username: sa
+    password:
   ## 다국어 메시지 설정 Resource Bundle
   messages:
     basename: messages
@@ -13,12 +18,18 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    defer-datasource-initialization: true
+
+    ## SQL 이쁘게 출력
+    properties:
+      hibernate:
+        format_sql: true
   h2:
     console:
       enabled: true
       settings:
         web-allow-others: true
-    
+
 
 ## Actuator 설정
 management:
