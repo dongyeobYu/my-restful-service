@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 
 
 @Getter
-@JsonIgnoreProperties({"password", "ssn"})  // 외부에 노출하기 싫은 데이터 제외
+@JsonIgnoreProperties(value = {"password", "ssn"}, allowSetters = true)  // 외부에 노출하기 싫은 데이터 제외
 @Schema(description = "사용자 상세 정보를 위한 도메인 객체")   // Swaggger 설정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

@@ -2,6 +2,7 @@ package kongkong.myrestfulservice.controller;
 
 import jakarta.validation.Valid;
 import kongkong.myrestfulservice.domain.User;
+import kongkong.myrestfulservice.domain.UserDto;
 import kongkong.myrestfulservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,11 @@ public class UserJPAController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user){
 
         User user1 = userRepository.save(user);
 
-        return ResponseEntity.ok(user1);
+        return ResponseEntity.ok(UserDto.from(user1));
     }
 
 }
