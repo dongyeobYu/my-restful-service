@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+
+// TODO : dto -> record 클래스로 변경
+
 @AllArgsConstructor
 @Getter
 @Setter
