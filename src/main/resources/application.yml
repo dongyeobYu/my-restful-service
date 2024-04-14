@@ -29,9 +29,16 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
+      path: /h2-console
   sql:
     init:
       mode: always
+
+  security:
+    user:
+      name: user
+      password: 1234
+      roles: USER
 
 
 ## Actuator 설정
