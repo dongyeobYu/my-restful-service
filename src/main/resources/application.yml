@@ -37,7 +37,7 @@ spring:
   security:
     user:
       name: user
-      password: 1234
+      password: password
       roles: USER
 
 

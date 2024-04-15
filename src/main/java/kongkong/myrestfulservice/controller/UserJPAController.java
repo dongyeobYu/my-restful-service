@@ -10,8 +10,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
+import java.net.URI;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -22,16 +24,31 @@ public class UserJPAController {
     private UserRepository userRepository;
 
     @GetMapping("/allUsers")
-    public ResponseEntity<List<User>> retrieveAllUsers(){
-        return ResponseEntity.ok(userRepository.findAll());
+    public ResponseEntity<HashMap<String, Object>> retrieveAllUsers(){
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        // count 추가
+        hashMap.put("count", userRepository.count());
+        hashMap.put("users", userRepository.findAll());
+
+        return ResponseEntity.ok(hashMap);
     }
 
     @PostMapping("/createUser")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user){
 
+        // TODO :: userDto 변환 Controller -> Service
         UserDto user1 = UserDto.from(userRepository.save(user));
 
-        return ResponseEntity.ok(user1);
+        // URI 추가
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/" + user1.getId())
+                .buildAndExpand()
+                .toUri();
+
+        return ResponseEntity.created(location).body(user1);
     }
 
     @GetMapping("/users/{id}")
@@ -56,5 +73,10 @@ public class UserJPAController {
         entityModel.add(linkTo.withRel("all-users"));
 
         return ResponseEntity.ok(entityModel);
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUserById(@PathVariable Long id){
+        userRepository.deleteById(id);
     }
 }
