@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import kongkong.myrestfulservice.domain.role.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,12 +47,16 @@ public class User {
     //@JsonIgnore
     private String ssn;
 
+    @Schema(title = "권한", description = "사용자 권한입니다.")
+    private Enum<Role> role;
+
     @Builder
-    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn) {
+    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn, Enum<Role> role) {
         this.id = id;
         this.name = name;
         this.joinDate = joinDate;
         this.password = password;
         this.ssn = ssn;
+        this.role = role;
     }
 }

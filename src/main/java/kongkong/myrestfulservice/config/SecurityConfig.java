@@ -1,5 +1,6 @@
 package kongkong.myrestfulservice.config;
 
+import kongkong.myrestfulservice.domain.role.Role;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +19,7 @@ public class SecurityConfig {
 
     @Bean
     @ConditionalOnProperty(name = "spring.h2.console.enalbed", havingValue = "true")
-    public WebSecurityCustomizer webSecurityCustomizer(){
+    public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(PathRequest.toH2Console());
     }
 
@@ -45,17 +46,30 @@ public class SecurityConfig {
 */
 
     @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder(){
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector) throws Exception{
+    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector) throws Exception {
 
         // 예전은             httpSecurity.csrf().disable()
         // 스프링 부트 3 이후는 httpSecurity.csrf(AbstractHttpConfigurer::disable)
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/", "/login/**").permitAll()
+                        .requestMatchers("/jpa/posts/*").hasRole(Role.USER.getRole())
+                        .requestMatchers("/admin/**").hasRole(Role.ADMIN.getRole())
+                        .anyRequest().permitAll()
+
+                )
+                .exceptionHandling((exception) -> {
+                            //TODO :: Exception Handler
+                        }
+                );
+
         return httpSecurity.build();
     }
 }
