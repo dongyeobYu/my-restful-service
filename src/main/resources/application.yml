@@ -11,13 +11,19 @@ spring:
     username: sa
     password:
 
+  ## AUTO-RESTART 사용 여부
+  devtools:
+    remote:
+      restart:
+        enabled: false
+
   ## 다국어 메시지 설정 Resource Bundle
   messages:
     basename: messages
   ## JPA 설정
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
 
     ## SQL 이쁘게 출력

@@ -1,9 +1,11 @@
 package kongkong.myrestfulservice.controller;
 
 import jakarta.validation.Valid;
+import kongkong.myrestfulservice.domain.Post;
 import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.domain.UserDto;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
+import kongkong.myrestfulservice.repository.PostRepository;
 import kongkong.myrestfulservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,6 +25,8 @@ import java.util.Optional;
 public class UserJPAController {
 
     private UserRepository userRepository;
+
+    private PostRepository postRepository;
 
     @GetMapping("/allUsers")
     public ResponseEntity<HashMap<String, Object>> retrieveAllUsers(){
@@ -34,6 +39,29 @@ public class UserJPAController {
 
         return ResponseEntity.ok(hashMap);
     }
+
+    @GetMapping("/posts/{id}")
+    public ResponseEntity<Optional<Post>> retrievePostById(@PathVariable Long id){
+            return ResponseEntity.ok(postRepository.findById(id));
+    }
+
+    @GetMapping("/user/posts/{id}")
+    public ResponseEntity<List<Post>> retrieveAllPostById(@PathVariable Long id){
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User Not Found");
+        }
+
+        return ResponseEntity.ok(user.get().getPosts());
+    }
+
+// TODO:: Custom Spring data JPA
+//    @PostMapping("/users/post/{id}")
+//    public ResponseEntity<List<Post>> retrievePostsByUserId(@PathVariable Long id){
+//        List<Post> postList = postRepository.findPostByName(id);
+//        return ResponseEntity.ok(postList);
+//    }
 
     @PostMapping("/createUser")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user){
