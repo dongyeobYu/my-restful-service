@@ -2,6 +2,7 @@ package kongkong.myrestfulservice.controller;
 
 import jakarta.validation.Valid;
 import kongkong.myrestfulservice.domain.Post;
+import kongkong.myrestfulservice.domain.PostDto;
 import kongkong.myrestfulservice.domain.User;
 import kongkong.myrestfulservice.domain.UserDto;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
@@ -46,14 +47,19 @@ public class UserJPAController {
     }
 
     @GetMapping("/user/posts/{id}")
-    public ResponseEntity<List<Post>> retrieveAllPostById(@PathVariable Long id){
+    public ResponseEntity<PostDto> retrieveAllPostById(@PathVariable Long id){
         Optional<User> user = userRepository.findById(id);
 
         if(user.isEmpty()){
             throw new UserNotFoundException("User Not Found");
         }
 
-        return ResponseEntity.ok(user.get().getPosts());
+        // TODO::순환참조 발생. 수정필요
+        List<Post> postList = user.get().getPosts();
+
+        PostDto postDto = PostDto.builder().id(id).userId(user.get().getId()).posts(postList).build();
+
+        return ResponseEntity.ok(postDto);
     }
 
 // TODO:: Custom Spring data JPA
@@ -106,5 +112,26 @@ public class UserJPAController {
     @DeleteMapping("/users/{id}")
     public void deleteUserById(@PathVariable Long id){
         userRepository.deleteById(id);
+    }
+
+    @PostMapping("/users/posts/{id}")
+    public ResponseEntity<Post> createPost(@PathVariable long id, @RequestBody Post post){
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User Not Found");
+        }
+
+        post.setUser(user.get());
+
+        postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()       // 
+                .path("/{id}")
+                .buildAndExpand(post.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }

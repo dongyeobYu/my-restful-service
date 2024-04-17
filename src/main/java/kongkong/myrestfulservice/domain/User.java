@@ -17,7 +17,6 @@ import java.util.List;
 @JsonIgnoreProperties(value = {"password", "ssn"}, allowSetters = true)  // 외부에 노출하기 싫은 데이터 제외
 @Schema(description = "사용자 상세 정보를 위한 도메인 객체")   // Swaggger 설정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
 @Table(name = "Users")
 public class User {
@@ -50,12 +49,13 @@ public class User {
     private List<Post> posts;
 
     @Builder
-    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn, Enum<Role> role) {
+    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn, Enum<Role> role, List<Post> posts) {
         this.id = id;
         this.name = name;
         this.joinDate = joinDate;
         this.password = password;
         this.ssn = ssn;
         this.role = role;
+        this.posts = posts;
     }
 }
