@@ -2,13 +2,13 @@ package kongkong.myrestfulservice.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class Post {
 
     @Id
@@ -17,6 +17,12 @@ public class Post {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    public Post(Long id, String description) {
+        this.id = id;
+        this.description = description;
+    }
 }

@@ -7,7 +7,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import kongkong.myrestfulservice.domain.role.Role;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +27,7 @@ public class User {
     @Schema(title = "사용자 ID", description = "사용자 아이디입니다.")
     @Id
     @GeneratedValue
+    @Column(name = "user_id")
     private Long id;
 
     @Schema(title = "사용자 이름", description = "사용자 이름입니다.")
@@ -45,7 +49,7 @@ public class User {
     @Schema(title = "권한", description = "사용자 권한입니다.")
     private Enum<Role> role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Post> posts;
 
     @Builder
