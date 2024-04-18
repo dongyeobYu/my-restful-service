@@ -26,7 +26,6 @@ public class User {
 
     @Schema(title = "사용자 ID", description = "사용자 아이디입니다.")
     @Id
-    @GeneratedValue
     @Column(name = "user_id")
     private Long id;
 

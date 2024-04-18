@@ -64,14 +64,6 @@ public class UserJPAController {
 
     @GetMapping("/v2/user/posts/{id}")
     public ResponseEntity<PostDto> retrieveAllPostByIdV2(@PathVariable Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("User Not Found");
-        }
-
-        User user = userOptional.get();
-
         Optional<Post> posts = postRepository.findById(id);
 
         // Exception 처리 필요
@@ -81,7 +73,7 @@ public class UserJPAController {
 
         PostDto postDto = PostDto.builder()
                 .id(id)
-                .userId(user.getId())
+                .userId(posts.get().getUser().getId())
                 .description(posts.get().getDescription())
                 .build();
 
