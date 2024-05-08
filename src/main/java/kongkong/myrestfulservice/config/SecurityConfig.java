@@ -1,5 +1,7 @@
 package kongkong.myrestfulservice.config;
 
+import kongkong.myrestfulservice.repository.UserRepository;
+import kongkong.myrestfulservice.service.CustomUserDetailsService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -51,7 +54,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector) throws Exception {
+    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector, JwtUtil jwtUtil, UserRepository userRepository) throws Exception {
 
         // 예전은             httpSecurity.csrf().disable()
         // 스프링 부트 3 이후는 httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -59,9 +62,9 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/", "/login/**").permitAll()
+                        //.requestMatchers(PathRequest.toH2Console()).permitAll()
+                        //.requestMatchers("/h2-console/**").permitAll()
+                        //.requestMatchers("/", "/login/**").permitAll()
                         //.requestMatchers("/jpa/posts/*").hasRole(Role.USER.getRole())
                         //.requestMatchers("/admin/**").hasRole(Role.ADMIN.getRole())
                         .anyRequest().permitAll()
@@ -70,6 +73,7 @@ public class SecurityConfig {
                 //Spring Security 는 기본적으로 X-Frame-Options 에서 Click jacking 을 막고있음
                 //*click jacking -> 해킹 기법
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .addFilterBefore(new JwtRequestFilter(jwtUtil, new CustomUserDetailsService(userRepository)), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exception) -> {
                             //TODO :: Exception Handler
                         }
