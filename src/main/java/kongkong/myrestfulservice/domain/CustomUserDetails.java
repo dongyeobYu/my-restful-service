@@ -17,7 +17,7 @@ public class CustomUserDetails implements UserDetails {
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
 
         authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
-        
+
         return authorities;
     }
 

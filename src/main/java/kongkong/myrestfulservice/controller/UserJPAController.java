@@ -1,10 +1,8 @@
 package kongkong.myrestfulservice.controller;
 
 import jakarta.validation.Valid;
-import kongkong.myrestfulservice.domain.Post;
-import kongkong.myrestfulservice.domain.PostDto;
-import kongkong.myrestfulservice.domain.User;
-import kongkong.myrestfulservice.domain.UserDto;
+import kongkong.myrestfulservice.config.JwtUtil;
+import kongkong.myrestfulservice.domain.*;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import kongkong.myrestfulservice.repository.PostRepository;
 import kongkong.myrestfulservice.repository.UserRepository;
@@ -12,6 +10,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,6 +28,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserJPAController {
 
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
     private UserRepository userRepository;
 
     private PostRepository postRepository;
@@ -151,5 +156,13 @@ public class UserJPAController {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PostMapping("/users/login/")
+    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) throws Exception {
+        Authentication authentication = authenticationManagerBuilder.
+        final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+        return ResponseEntity.ok(new AuthResponse(jwt));
     }
 }

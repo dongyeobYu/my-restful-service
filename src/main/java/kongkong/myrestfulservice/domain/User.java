@@ -46,13 +46,13 @@ public class User {
     private String ssn;
 
     @Schema(title = "권한", description = "사용자 권한입니다.")
-    private Enum<Role> role;
+    private Role role;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Post> posts;
 
     @Builder
-    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn, Enum<Role> role, List<Post> posts) {
+    public User(Long id, String name, LocalDateTime joinDate, String password, String ssn, Role role, List<Post> posts) {
         this.id = id;
         this.name = name;
         this.joinDate = joinDate;
