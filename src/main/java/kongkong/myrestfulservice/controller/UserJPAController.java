@@ -6,6 +6,7 @@ import kongkong.myrestfulservice.domain.*;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import kongkong.myrestfulservice.repository.PostRepository;
 import kongkong.myrestfulservice.repository.UserRepository;
+import kongkong.myrestfulservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,7 +34,11 @@ public class UserJPAController {
     private final AuthenticationManager authenticationManager;
     private UserRepository userRepository;
 
+    private UserService userService;
+
     private PostRepository postRepository;
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping("/allUsers")
     public ResponseEntity<HashMap<String, Object>> retrieveAllUsers(){
@@ -93,10 +99,10 @@ public class UserJPAController {
 //    }
 
     @PostMapping("/createUser")
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
 
         // TODO :: userDto 변환 Controller -> Service
-        UserDto user1 = UserDto.from(userRepository.save(user));
+        UserDto user1 = userService.save(userDto);
 
         // URI 추가
         URI location = ServletUriComponentsBuilder
@@ -158,9 +164,9 @@ public class UserJPAController {
         return ResponseEntity.created(location).build();
     }
 
-    @PostMapping("/users/login/")
-    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) throws Exception {
-        Authentication authentication = authenticationManagerBuilder.
+    @PostMapping(value = "/users/login")
+    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
         return ResponseEntity.ok(new AuthResponse(jwt));

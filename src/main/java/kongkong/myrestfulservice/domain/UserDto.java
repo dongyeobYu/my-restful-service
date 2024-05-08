@@ -1,5 +1,6 @@
 package kongkong.myrestfulservice.domain;
 
+import kongkong.myrestfulservice.domain.role.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +17,12 @@ public class UserDto {
     private final Long id;
     private final String name;
     private final String password;
+    private final Role role;
 
 
     @Builder
     public static UserDto from(User user){
-        return new UserDto(user.getId(), user.getName(), user.getPassword());
+        return new UserDto(user.getId(), user.getName(), user.getPassword(), user.getRole());
     }
 
 }

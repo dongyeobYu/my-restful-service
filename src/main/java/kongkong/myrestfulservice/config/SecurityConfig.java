@@ -73,7 +73,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector, JwtUtil jwtUtil, UserRepository userRepository) throws Exception {
+    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector, JwtUtil jwtUtil) throws Exception {
 
         // 예전은             httpSecurity.csrf().disable()
         // 스프링 부트 3 이후는 httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -81,7 +81,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/jpa/users/login/").permitAll()
+                        .requestMatchers("/jpa/users/login").permitAll()
                         .requestMatchers("/jpa/createUser").permitAll()
                         //.requestMatchers(PathRequest.toH2Console()).permitAll()
                         //.requestMatchers("/h2-console/**").permitAll()
@@ -94,7 +94,7 @@ public class SecurityConfig {
                 //Spring Security 는 기본적으로 X-Frame-Options 에서 Click jacking 을 막고있음
                 //*click jacking -> 해킹 기법
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .addFilterBefore(new JwtRequestFilter(jwtUtil, new CustomUserDetailsService(userRepository)), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRequestFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exception) -> {
                             //TODO :: Exception Handler
                         }
