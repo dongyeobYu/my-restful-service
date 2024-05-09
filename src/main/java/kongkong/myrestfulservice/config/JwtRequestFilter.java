@@ -23,14 +23,28 @@ public class JwtRequestFilter  extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String filterSkipPath = request.getRequestURI();
+
+        // 로그인, 회원가입은 필터적용 X
+        if(filterSkipPath.startsWith("/jpa/users/login") || filterSkipPath.startsWith("/jpa/createUser")){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authorizationHeader = request.getHeader("Authorization");        // Header 에서 Authorization 정보를 가져옴
 
         String token = null;
         String username = null;
 
+
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){       // Authorization 이 Null 이 아니고 Bearer로 시작하면 Jwt 토큰
             token = authorizationHeader.substring(7);                              // 토큰값 가져오기
             username = jwtUtil.extractUsername(token);                                      // 토큰에서 Username 추출하기
+        } else{
+            // Bearer 타입이 아니거나, 토큰이 없으면 401 Unauthorized 응답
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         if(username != null & SecurityContextHolder.getContext().getAuthentication() == null){

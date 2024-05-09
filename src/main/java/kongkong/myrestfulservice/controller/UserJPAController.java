@@ -13,7 +13,6 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -166,8 +165,13 @@ public class UserJPAController {
 
     @PostMapping(value = "/users/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+        // 입력받은 로그인 정보로 UsernamePasswordAuthenticationToken 생성
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
+
+        // authentication 객체에서 UserDetails 추출(사용자의 상세정보 포함)
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        
+        // JWT 토큰 생성
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
