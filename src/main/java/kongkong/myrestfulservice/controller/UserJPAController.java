@@ -184,11 +184,15 @@ public class UserJPAController {
 
         String refreshToken = jwtTokenDto.getRefreshToken();
 
+        // 만료되었는지 확인
         if (jwtUtil.isTokenExpired(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is expired");
         }
 
+        // refreshToken 의 Subject 와 추출한 유저가 동일한지 확인
         if(jwtUtil.validateToken(refreshToken, jwtUtil.extractUsername(refreshToken))){
+            
+            // 동일하면 새로운 AccessToken 발급
             String newAccessToken = jwtUtil.generateAccessToken(jwtUtil.extractUsername(refreshToken));
             return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken));
         }
