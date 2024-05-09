@@ -189,12 +189,16 @@ public class UserJPAController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is expired");
         }
 
+        String username = jwtUtil.extractUsername(refreshToken);
+
         // refreshToken 의 Subject 와 추출한 유저가 동일한지 확인
-        if(jwtUtil.validateToken(refreshToken, jwtUtil.extractUsername(refreshToken))){
+        if(jwtUtil.validateToken(refreshToken, username)){
+
             
-            // 동일하면 새로운 AccessToken 발급
-            String newAccessToken = jwtUtil.generateAccessToken(jwtUtil.extractUsername(refreshToken));
-            return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken));
+            // 동일하면 새로운 AccessToken, RefreshToken 발급
+            String newAccessToken = jwtUtil.generateAccessToken(username);
+            String newRefreshToken = jwtUtil.generateRefreshToken(username);
+            return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");

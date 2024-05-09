@@ -30,12 +30,10 @@ public class JwtUtil {
 
     /***
      *  Refresh 토큰 생성
-     * @param token JWT 토큰
+     * @param username 유저 ID
      * @return 생성된 JWT token 문자열 반환
      */
-    public String generateRefreshToken(String token) {
-
-        String username = this.extractUsername(token);
+    public String generateRefreshToken(String username) {
 
         return JWT.create()
                 .withSubject(username)                                                      // 토큰 주체, 사용자 이름
