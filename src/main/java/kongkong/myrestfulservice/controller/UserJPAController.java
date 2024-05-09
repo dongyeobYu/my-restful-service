@@ -10,6 +10,7 @@ import kongkong.myrestfulservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -175,5 +176,23 @@ public class UserJPAController {
         final String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
         final String refreshToken = jwtUtil.generateRefreshToken(accessToken);
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
+    }
+
+    // 리프레시 토큰
+    @PostMapping("/refresh/token")
+    public ResponseEntity<?> refreshToken(@RequestBody JwtTokenDto jwtTokenDto) {
+
+        String refreshToken = jwtTokenDto.getRefreshToken();
+
+        if (jwtUtil.isTokenExpired(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is expired");
+        }
+
+        if(jwtUtil.validateToken(refreshToken, jwtUtil.extractUsername(refreshToken))){
+            String newAccessToken = jwtUtil.generateAccessToken(jwtUtil.extractUsername(refreshToken));
+            return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken));
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
     }
 }

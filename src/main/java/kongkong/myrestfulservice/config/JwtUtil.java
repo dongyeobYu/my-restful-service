@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -22,7 +23,7 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(username)                                                      // 토큰 주체, 사용자 이름
                 .withIssuedAt(new Date())                                                   // 토큰 발행 시간, 현재시간
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 15))       // 1 hours 1000 * 60 * 60
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 30))       // 1 hours 1000 * 60 * 60
                 .withClaim("token_type", "access token")                         // token_type 추가 , claim 커스텀
                 .sign(Algorithm.HMAC256(SECRET_KEY));                                       // 서명, SECRET_KEY 를 HMAC256 알고리즘으로 변환
     }
@@ -58,10 +59,10 @@ public class JwtUtil {
      * @param token 토큰
      * @return 토큰에서 추출한 만료시간
      * */
-    public Boolean extractExpiration(String token){
+    public Boolean isTokenExpired(String token){
 
         final Date expricateion = JWT.decode(token).getExpiresAt();             // 만료시간 추출
-        return expricateion.before(new Date());                                 // 만료시간이 전인지 확인 안지났으면 false, 아니면 true
+        return expricateion.before(new Date());                                  // 만료되었으면 true, 아니면 false
     }
 
 
@@ -70,11 +71,15 @@ public class JwtUtil {
      * @param token 토큰
      * @return boolean
      */
-    public boolean validateToken(String token){
+    public boolean validateToken(String token, String name){
         try{
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET_KEY)).build();
-            verifier.verify(token);
-            return true;
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET_KEY))
+                                      .withSubject(name)
+                                      .build();
+            DecodedJWT jwt = verifier.verify(token);
+
+            String tokenSubject = jwt.getSubject();
+            return tokenSubject.equals(name);
         } catch(JWTVerificationException e){
             // Invalid Token
             //e.printStackTrace();
