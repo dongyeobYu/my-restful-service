@@ -47,6 +47,11 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
 
     }
+    
+    // .permitAll() 주소
+    private static final String[] PERMIT_ALL = {
+            "/jpa/users/login", "/jpa/createUser", "/error", "/jpa/refresh/token"
+    };
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector, JwtUtil jwtUtil) throws Exception {
@@ -54,7 +59,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/jpa/users/login", "/jpa/createUser", "/error").permitAll()
+                        .requestMatchers(PERMIT_ALL).permitAll()
                         .anyRequest().authenticated()
                 )
                 //X-Frame-Options 브라우저에서 iframe 에서 일어난 요청에 대해 Origin 을 파악하고 같으면 요청을 허용하게됨
