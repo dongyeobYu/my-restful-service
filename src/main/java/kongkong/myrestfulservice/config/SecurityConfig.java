@@ -54,7 +54,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/jpa/users/login", "/jpa/createUser").permitAll()
+                        .requestMatchers("/jpa/users/login", "/jpa/createUser", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 //X-Frame-Options 브라우저에서 iframe 에서 일어난 요청에 대해 Origin 을 파악하고 같으면 요청을 허용하게됨

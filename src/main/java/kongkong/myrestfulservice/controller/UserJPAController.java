@@ -172,7 +172,8 @@ public class UserJPAController {
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         
         // JWT 토큰 생성
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        final String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
+        final String refreshToken = jwtUtil.generateRefreshToken(accessToken);
+        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
     }
 }

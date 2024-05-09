@@ -14,16 +14,33 @@ public class JwtUtil {
     private static final String SECRET_KEY = "KEYKEYKEY";
 
     /***
-     *  토큰 생성
+     * Access 토큰 생성
      * @param username 유저 ID 
      * @return 생성된 JWT token 문자열 반환
      */
-    public String generateToken(String username) {
+    public String generateAccessToken(String username) {
         return JWT.create()
                 .withSubject(username)                                                      // 토큰 주체, 사용자 이름
                 .withIssuedAt(new Date())                                                   // 토큰 발행 시간, 현재시간
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // 10 hours
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 15))       // 1 hours 1000 * 60 * 60
                 .withClaim("token_type", "access token")                         // token_type 추가 , claim 커스텀
+                .sign(Algorithm.HMAC256(SECRET_KEY));                                       // 서명, SECRET_KEY 를 HMAC256 알고리즘으로 변환
+    }
+
+    /***
+     *  Refresh 토큰 생성
+     * @param token JWT 토큰
+     * @return 생성된 JWT token 문자열 반환
+     */
+    public String generateRefreshToken(String token) {
+
+        String username = this.extractUsername(token);
+
+        return JWT.create()
+                .withSubject(username)                                                      // 토큰 주체, 사용자 이름
+                .withIssuedAt(new Date())                                                   // 토큰 발행 시간, 현재시간
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 3))       // 3 day
+                .withClaim("token_type", "refresh token")                         // token_type 추가 , claim 커스텀
                 .sign(Algorithm.HMAC256(SECRET_KEY));                                       // 서명, SECRET_KEY 를 HMAC256 알고리즘으로 변환
     }
 
@@ -32,8 +49,19 @@ public class JwtUtil {
      * @param token 토큰
      * @return 토큰에서 추출한 ID
      * */
-    public String extractUsername(String token){
+    public String extractUsername(String token) {
         return JWT.decode(token).getSubject();
+    }
+    
+    /**
+     * 토큰이 만료되었는지 확인
+     * @param token 토큰
+     * @return 토큰에서 추출한 만료시간
+     * */
+    public Boolean extractExpiration(String token){
+
+        final Date expricateion = JWT.decode(token).getExpiresAt();             // 만료시간 추출
+        return expricateion.before(new Date());                                 // 만료시간이 전인지 확인 안지났으면 false, 아니면 true
     }
 
 
@@ -49,7 +77,7 @@ public class JwtUtil {
             return true;
         } catch(JWTVerificationException e){
             // Invalid Token
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return false;
