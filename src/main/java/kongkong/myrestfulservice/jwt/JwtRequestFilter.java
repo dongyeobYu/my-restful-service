@@ -57,10 +57,6 @@ public class JwtRequestFilter  extends OncePerRequestFilter {
 
         // 리프레시 토큰일 경우 검증 수행, 만료기간이 남으면 핉터체인 진행, 없으면 401 에러 반환
         if("refresh".equals(type)){
-            if(!jwtService.checkToken(token)){
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh token is Expired");
-                return;
-            }
             filterChain.doFilter(request, response);
             return;
         }

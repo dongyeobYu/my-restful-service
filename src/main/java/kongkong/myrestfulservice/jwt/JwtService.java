@@ -43,29 +43,4 @@ public class JwtService {
         return new AuthResponse(accessToken, refreshToken);
     }
 
-    /*@Transactional
-    public void saveToken(String accessToken, String refreshToken){
-
-        tokenDto tokenDto = kongkong.myrestfulservice.jwt.tokenDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .expiredYN(1)
-                .expiredDate(jwtUtil.extractExpiredDate(refreshToken))
-                .build();
-
-        jwtRepository.save(tokenDto.toEntity(tokenDto));
-    }*/
-
-    @Transactional
-    public boolean checkToken(String refreshToken){
-        token token = jwtRepository.findByRefreshToken(refreshToken);
-
-        return token.getExpiredYN() != 0;
-    }
-
-    @Transactional
-    public void expriedToken(String refreshToken){
-        jwtRepository.updateExpiredYNByToken(refreshToken);
-    }
-
 }
