@@ -2,6 +2,8 @@ package kongkong.myrestfulservice.jwt;
 
 import kongkong.myrestfulservice.domain.AuthRequest;
 import kongkong.myrestfulservice.domain.AuthResponse;
+import kongkong.myrestfulservice.jwt.redis.RedisRepository;
+import kongkong.myrestfulservice.jwt.redis.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +23,8 @@ public class JwtService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final RedisRepository redisRepository;
+
     @Transactional
     public AuthResponse createToken(AuthRequest authRequest){
 
@@ -34,12 +38,12 @@ public class JwtService {
         final String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
         final String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
 
-        this.saveToken(accessToken, refreshToken);
+        redisRepository.save(new RefreshToken(refreshToken, userDetails.getUsername()));
 
         return new AuthResponse(accessToken, refreshToken);
     }
 
-    @Transactional
+    /*@Transactional
     public void saveToken(String accessToken, String refreshToken){
 
         tokenDto tokenDto = kongkong.myrestfulservice.jwt.tokenDto.builder()
@@ -50,7 +54,7 @@ public class JwtService {
                 .build();
 
         jwtRepository.save(tokenDto.toEntity(tokenDto));
-    }
+    }*/
 
     @Transactional
     public boolean checkToken(String refreshToken){

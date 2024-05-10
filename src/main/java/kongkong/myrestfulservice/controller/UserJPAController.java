@@ -1,13 +1,15 @@
 package kongkong.myrestfulservice.controller;
 
 import jakarta.validation.Valid;
-import kongkong.myrestfulservice.jwt.JwtTokenDto;
-import kongkong.myrestfulservice.jwt.JwtUtil;
 import kongkong.myrestfulservice.domain.*;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
+import kongkong.myrestfulservice.jwt.JwtService;
+import kongkong.myrestfulservice.jwt.JwtTokenDto;
+import kongkong.myrestfulservice.jwt.JwtUtil;
+import kongkong.myrestfulservice.jwt.redis.RedisRepository;
+import kongkong.myrestfulservice.jwt.redis.RefreshToken;
 import kongkong.myrestfulservice.repository.PostRepository;
 import kongkong.myrestfulservice.repository.UserRepository;
-import kongkong.myrestfulservice.jwt.JwtService;
 import kongkong.myrestfulservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -16,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -34,6 +37,7 @@ public class UserJPAController {
     private final PostRepository postRepository;
     private final JwtService jwtService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RedisRepository redisRepository;
 
     @GetMapping("/allUsers")
     public ResponseEntity<HashMap<String, Object>> retrieveAllUsers(){
@@ -168,29 +172,21 @@ public class UserJPAController {
     @PostMapping("/refresh/token")
     public ResponseEntity<?> refreshToken(@RequestBody JwtTokenDto jwtTokenDto) {
 
-        String refreshToken = jwtTokenDto.getRefreshToken();
+        RefreshToken refreshToken = redisRepository.findById(jwtTokenDto.getRefreshToken())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
-        // 만료되었는지 확인
-        if (jwtUtil.isTokenExpired(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is expired");
-        }
-
-        // 폐기되었는지 확인
-        if(!jwtService.checkToken(refreshToken)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is discard");
-        }
-
-        String username = jwtUtil.extractUsername(refreshToken);
+        String username = jwtUtil.extractUsername(refreshToken.getRefreshToken());
 
         // refreshToken 의 Subject 와 추출한 유저가 동일한지 확인
-        if(jwtUtil.validateToken(refreshToken, username)){
+        if(jwtUtil.validateToken(refreshToken.getRefreshToken(), username)){
 
             // 동일하면 새로운 AccessToken, RefreshToken 발급
             String newAccessToken = jwtUtil.generateAccessToken(username);
             String newRefreshToken = jwtUtil.generateRefreshToken(username);
 
-            jwtService.saveToken(newAccessToken, newRefreshToken);
-            jwtService.expriedToken(refreshToken);
+            // 기존 토큰 레디스에서 삭제 후 새로운 토큰 저장
+            redisRepository.deleteById(refreshToken.getRefreshToken());
+            redisRepository.save(new RefreshToken(newRefreshToken, username));
 
             return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
         }
