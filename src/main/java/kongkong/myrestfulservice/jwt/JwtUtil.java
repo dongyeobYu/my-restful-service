@@ -23,7 +23,7 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(username)                                                      // 토큰 주체, 사용자 이름
                 .withIssuedAt(new Date())                                                   // 토큰 발행 시간, 현재시간
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 10))       // 1 hours 1000 * 60 * 60
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))       // 1 hours 1000 * 60 * 60
                 .withClaim("token_type", "access")                         // token_type 추가 , claim 커스텀
                 .sign(Algorithm.HMAC256(SECRET_KEY));                                       // 서명, SECRET_KEY 를 HMAC256 알고리즘으로 변환
     }
@@ -38,7 +38,7 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(username)                                                      // 토큰 주체, 사용자 이름
                 .withIssuedAt(new Date())                                                   // 토큰 발행 시간, 현재시간
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 20))       // 3 day 1000 * 60 * 60 * 24 * 3
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 3))       // 3 day 1000 * 60 * 60 * 24 * 3
                 .withClaim("token_type", "refresh")                         // token_type 추가 , claim 커스텀
                 .sign(Algorithm.HMAC256(SECRET_KEY));                                       // 서명, SECRET_KEY 를 HMAC256 알고리즘으로 변환
     }

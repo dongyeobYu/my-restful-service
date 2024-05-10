@@ -16,7 +16,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -36,7 +35,6 @@ public class UserJPAController {
     private final UserService userService;
     private final PostRepository postRepository;
     private final JwtService jwtService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisRepository redisRepository;
 
     @GetMapping("/allUsers")
@@ -75,11 +73,6 @@ public class UserJPAController {
     @GetMapping("/v2/user/posts/{id}")
     public ResponseEntity<PostDto> retrieveAllPostByIdV2(@PathVariable Long id) {
         Optional<Post> posts = postRepository.findById(id);
-
-        // Exception 처리 필요
-        /*if(posts.isEmpty()){
-            throw new UserNotFoundException("11");
-        }*/
 
         PostDto postDto = PostDto.builder()
                 .id(id)
@@ -173,24 +166,24 @@ public class UserJPAController {
     public ResponseEntity<?> refreshToken(@RequestBody JwtTokenDto jwtTokenDto) {
 
         RefreshToken refreshToken = redisRepository.findById(jwtTokenDto.getRefreshToken())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not Found Token in Redis"));
 
         String username = jwtUtil.extractUsername(refreshToken.getRefreshToken());
 
         // refreshToken 의 Subject 와 추출한 유저가 동일한지 확인
-        if(jwtUtil.validateToken(refreshToken.getRefreshToken(), username)){
-
-            // 동일하면 새로운 AccessToken, RefreshToken 발급
-            String newAccessToken = jwtUtil.generateAccessToken(username);
-            String newRefreshToken = jwtUtil.generateRefreshToken(username);
-
-            // 기존 토큰 레디스에서 삭제 후 새로운 토큰 저장
-            redisRepository.deleteById(refreshToken.getRefreshToken());
-            redisRepository.save(new RefreshToken(newRefreshToken, username));
-
-            return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
+        if(!jwtUtil.validateToken(refreshToken.getRefreshToken(), username)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+        // 동일하면 새로운 AccessToken, RefreshToken 발급
+        String newAccessToken = jwtUtil.generateAccessToken(username);
+        String newRefreshToken = jwtUtil.generateRefreshToken(username);
+
+        // 기존 토큰 레디스에서 삭제 후 새로운 토큰 저장
+        redisRepository.save(new RefreshToken(newRefreshToken, username));
+        redisRepository.deleteById(refreshToken.getRefreshToken());
+
+        return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
+
     }
 }
