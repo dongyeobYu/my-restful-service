@@ -1,5 +1,6 @@
 package kongkong.myrestfulservice.config;
 
+import kongkong.myrestfulservice.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -50,11 +51,11 @@ public class SecurityConfig {
     
     // .permitAll() 주소
     private static final String[] PERMIT_ALL = {
-            "/jpa/users/login", "/jpa/createUser", "/error", "/jpa/refresh/token"
+            "/jpa/users/login", "/jpa/createUser", "/error", "/jpa/refresh/token", "/h2-console", "/h2-console/"
     };
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector, JwtUtil jwtUtil) throws Exception {
+    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector, JwtUtil jwtUtil, JwtService jwtService) throws Exception {
 
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
@@ -66,7 +67,7 @@ public class SecurityConfig {
                 //Spring Security 는 기본적으로 X-Frame-Options 에서 Click jacking 을 막고있음
                 //*click jacking -> 해킹 기법
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .addFilterBefore(new JwtRequestFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRequestFilter(jwtUtil, userDetailsService, jwtService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exception) -> {
                             //TODO :: Exception Handler
                         }

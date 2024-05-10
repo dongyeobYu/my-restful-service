@@ -6,16 +6,13 @@ import kongkong.myrestfulservice.domain.*;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import kongkong.myrestfulservice.repository.PostRepository;
 import kongkong.myrestfulservice.repository.UserRepository;
+import kongkong.myrestfulservice.service.JwtService;
 import kongkong.myrestfulservice.service.UserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,18 +24,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/jpa")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserJPAController {
 
     private final JwtUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-
-    private UserService userService;
-
-    private PostRepository postRepository;
-
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final PostRepository postRepository;
+    private final JwtService jwtService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping("/allUsers")
     public ResponseEntity<HashMap<String, Object>> retrieveAllUsers(){
@@ -166,16 +160,7 @@ public class UserJPAController {
 
     @PostMapping(value = "/users/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-        // 입력받은 로그인 정보로 UsernamePasswordAuthenticationToken 생성
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
-
-        // authentication 객체에서 UserDetails 추출(사용자의 상세정보 포함)
-        final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        
-        // JWT 토큰 생성
-        final String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
-        final String refreshToken = jwtUtil.generateRefreshToken(accessToken);
-        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(jwtService.createToken(authRequest));
     }
 
     // 리프레시 토큰
@@ -189,15 +174,23 @@ public class UserJPAController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is expired");
         }
 
+        // 폐기되었는지 확인
+        if(!jwtService.checkToken(refreshToken)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token is discard");
+        }
+
         String username = jwtUtil.extractUsername(refreshToken);
 
         // refreshToken 의 Subject 와 추출한 유저가 동일한지 확인
         if(jwtUtil.validateToken(refreshToken, username)){
 
-            
             // 동일하면 새로운 AccessToken, RefreshToken 발급
             String newAccessToken = jwtUtil.generateAccessToken(username);
             String newRefreshToken = jwtUtil.generateRefreshToken(username);
+
+            jwtService.saveToken(newAccessToken, newRefreshToken);
+            jwtService.expriedToken(refreshToken);
+
             return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
         }
 
