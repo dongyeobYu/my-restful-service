@@ -1,12 +1,13 @@
 package kongkong.myrestfulservice.controller;
 
 import jakarta.validation.Valid;
-import kongkong.myrestfulservice.config.JwtUtil;
+import kongkong.myrestfulservice.jwt.JwtTokenDto;
+import kongkong.myrestfulservice.jwt.JwtUtil;
 import kongkong.myrestfulservice.domain.*;
 import kongkong.myrestfulservice.exception.UserNotFoundException;
 import kongkong.myrestfulservice.repository.PostRepository;
 import kongkong.myrestfulservice.repository.UserRepository;
-import kongkong.myrestfulservice.service.JwtService;
+import kongkong.myrestfulservice.jwt.JwtService;
 import kongkong.myrestfulservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;

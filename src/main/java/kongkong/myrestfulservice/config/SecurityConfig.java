@@ -1,6 +1,8 @@
 package kongkong.myrestfulservice.config;
 
-import kongkong.myrestfulservice.service.JwtService;
+import kongkong.myrestfulservice.jwt.JwtRequestFilter;
+import kongkong.myrestfulservice.jwt.JwtUtil;
+import kongkong.myrestfulservice.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

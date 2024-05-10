@@ -1,4 +1,4 @@
-package kongkong.myrestfulservice.domain;
+package kongkong.myrestfulservice.jwt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

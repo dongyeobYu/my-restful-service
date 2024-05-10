@@ -1,11 +1,7 @@
-package kongkong.myrestfulservice.service;
+package kongkong.myrestfulservice.jwt;
 
-import kongkong.myrestfulservice.config.JwtUtil;
 import kongkong.myrestfulservice.domain.AuthRequest;
 import kongkong.myrestfulservice.domain.AuthResponse;
-import kongkong.myrestfulservice.domain.token;
-import kongkong.myrestfulservice.domain.tokenDto;
-import kongkong.myrestfulservice.repository.JwtRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,7 +42,7 @@ public class JwtService {
     @Transactional
     public void saveToken(String accessToken, String refreshToken){
 
-        tokenDto tokenDto = kongkong.myrestfulservice.domain.tokenDto.builder()
+        tokenDto tokenDto = kongkong.myrestfulservice.jwt.tokenDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .expiredYN(1)

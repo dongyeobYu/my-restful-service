@@ -1,4 +1,4 @@
-package kongkong.myrestfulservice.domain;
+package kongkong.myrestfulservice.jwt;
 
 import jakarta.persistence.Column;
 import lombok.Builder;
