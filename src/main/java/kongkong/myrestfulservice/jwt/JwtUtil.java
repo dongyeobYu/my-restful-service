@@ -23,7 +23,7 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(username)                                                      // 토큰 주체, 사용자 이름
                 .withIssuedAt(new Date())                                                   // 토큰 발행 시간, 현재시간
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))       // 1 hours 1000 * 60 * 60
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))       // 1 hours 1000 * 60
                 .withClaim("token_type", "access")                         // token_type 추가 , claim 커스텀
                 .sign(Algorithm.HMAC256(SECRET_KEY));                                       // 서명, SECRET_KEY 를 HMAC256 알고리즘으로 변환
     }
@@ -55,29 +55,10 @@ public class JwtUtil {
     /**
      * 토큰 추출
      * @param token 토큰
-     * @return 토큰에서 추출한 만료시간
-     * */
-    public Date extractExpiredDate(String token) {
-        return JWT.decode(token).getExpiresAt();
-    }
-    /**
-     * 토큰 추출
-     * @param token 토큰
      * @return 토큰에서 추출한 타입 ex)access, refresh
      * */
     public String extractType(String token) {
         return JWT.decode(token).getClaim("token_type").toString();
-    }
-    
-    /**
-     * 토큰이 만료되었는지 확인
-     * @param token 토큰
-     * @return 토큰에서 추출한 만료시간
-     * */
-    public Boolean isTokenExpired(String token){
-
-        final Date expricateion = JWT.decode(token).getExpiresAt();             // 만료시간 추출
-        return expricateion.before(new Date());                                  // 만료되었으면 true, 아니면 false
     }
 
     /**

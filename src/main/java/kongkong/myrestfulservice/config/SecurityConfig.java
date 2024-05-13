@@ -65,9 +65,6 @@ public class SecurityConfig {
                         .requestMatchers(PERMIT_ALL).permitAll()
                         .anyRequest().authenticated()
                 )
-                //X-Frame-Options 브라우저에서 iframe 에서 일어난 요청에 대해 Origin 을 파악하고 같으면 요청을 허용하게됨
-                //Spring Security 는 기본적으로 X-Frame-Options 에서 Click jacking 을 막고있음
-                //*click jacking -> 해킹 기법
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .addFilterBefore(new JwtRequestFilter(jwtUtil, userDetailsService, jwtService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exception) -> {
